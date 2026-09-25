@@ -1,0 +1,285 @@
+ body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f9efe6 0%, #f5f5f5 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 32px 16px;
+    }
+
+    .signin-container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(62, 44, 35, 0.12);
+      padding: 52px 40px 44px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Logo / Brand mark */
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--orange) 0%, #b8620f 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(212, 119, 25, 0.35);
+    }
+
+    .brand-mark svg {
+      width: 26px;
+      height: 26px;
+      fill: #fff;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    /* Field groups */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brown);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 17px;
+      height: 17px;
+      stroke: #bbb;
+      transition: stroke 0.2s;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: var(--brown);
+      background: var(--gray);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--orange);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(212, 119, 25, 0.12);
+    }
+
+    input:focus + svg,
+    .input-wrapper:focus-within svg {
+      stroke: var(--orange);
+    }
+
+    input::placeholder {
+      color: #bbb;
+      font-weight: 400;
+    }
+
+    /* Password toggle */
+    .toggle-pw {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: #bbb;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover {
+      color: var(--orange);
+    }
+
+    .toggle-pw svg {
+      position: static;
+      transform: none;
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* Row: remember me + forgot */
+    .form-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      margin-top: 4px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      appearance: none;
+      width: 17px;
+      height: 17px;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      background: var(--gray);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .remember-me input[type="checkbox"]:checked {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .remember-me input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .remember-me label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--orange);
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Sign in button */
+    .btn-signin {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--orange) 0%, #b8620f 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(212, 119, 25, 0.35);
+    }
+
+    .btn-signin:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(212, 119, 25, 0.45);
+    }
+
+    .btn-signin:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(212, 119, 25, 0.3);
+    }
+
+    /* Divider */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: var(--border);
+    }
+
+    /* Register link */
+    .register-link {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .register-link a {
+      color: var(--orange);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .signin-container {
+        padding: 36px 22px 32px;
+      }
+    }
+
+    /* ── Alerts / Flash Messages ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .alert-error   { background: #fef5f5; color: #e74c3c; border: 1px solid #f5c6cb; }
+    .alert-success { background: #f0fdf4; color: #27ae60; border: 1px solid #c6f6d5; }
+    .alert-info    { background: #eaf4fe; color: #3498db; border: 1px solid #b8d9f5; }
+    .alert-warning { background: #fffbeb; color: #b8860b; border: 1px solid #f5e6a8; }
+ 

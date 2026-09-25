@@ -1,0 +1,11 @@
+{
+    "name": "arena/arena-market",
+    "description": "Arena Market - Nigerian Army Shopping Arena E-Commerce Platform",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^7.1"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
