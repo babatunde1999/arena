@@ -136,9 +136,40 @@ function formatPrice($amount) {
 }
 
 /**
- * Check if current user is admin
+ * Log out the current user (destroys session + remember-me cookie)
+ * Restarts a fresh session so flash messages set after logout still work.
+ */
+function logout() {
+    $_SESSION = [];
+
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params['path'],
+            $params['domain'],
+            $params['secure'],
+            $params['httponly']
+        );
+    }
+
+    setcookie('remember_me', '', time() - 3600, '/', '', false, true);
+
+    session_destroy();
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+        session_regenerate_id(true);
+    }
+}
+
+/**
+ * Check if the current session is an authenticated administrator
+ * (admins live in their own `admins` table, not `users`).
  * @return bool
  */
 function isAdmin() {
-    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] === true;
 }

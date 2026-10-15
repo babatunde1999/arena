@@ -1,3 +1,26 @@
+<?php
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../config/database.php';
+
+$flash = getFlash();
+
+// ── Featured products pinned by the admin ("Show on home page") ──
+$featuredProducts = [];
+try {
+    $featuredProducts = getDB()->query(
+        "SELECT p.id, p.name, p.price, p.old_price, p.image,
+                c.name AS category_name, s.name AS shop_name
+           FROM products p
+           LEFT JOIN categories c ON c.id = p.category_id
+           LEFT JOIN shops s ON s.id = p.shop_id
+          WHERE p.is_featured = 1
+          ORDER BY p.created_at DESC, p.id DESC"
+    )->fetchAll();
+} catch (PDOException $e) {
+    error_log("Featured products error: " . $e->getMessage());
+}
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -129,7 +152,46 @@
             </div>
 
                 <div class="wishlist">
-               <a href="" title="Profile">
+               <?php if (isLoggedIn()): ?>
+               <div class="user-menu" id="user-menu">
+                 <button type="button" class="user-chip" id="user-menu-btn" onclick="toggleUserMenu(event)" aria-haspopup="true" aria-expanded="false">
+                   <svg
+                     class="nav-icon"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                   >
+                     <path
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                     />
+                   </svg>
+                   <span class="account"><?= sanitize(getUsername()) ?></span>
+                   <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                   </svg>
+                 </button>
+
+                 <div class="user-dropdown" id="user-dropdown">
+                   <a href="<?= SITE_URL ?>/products.php" class="dropdown-item" onclick="closeUserMenu()">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                     </svg>
+                     My Products
+                   </a>
+                   <button type="button" class="dropdown-item" onclick="closeUserMenu(); openLogoutModal();">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                     </svg>
+                     Logout
+                   </button>
+                 </div>
+               </div>
+               <?php else: ?>
+               <a href="<?= SITE_URL ?>/login.php" title="Sign In">
               <svg
                 class="nav-icon"
                 xmlns="http://www.w3.org/2000/svg"
@@ -145,8 +207,9 @@
                 />
               </svg>
 
-                <span class="account">My Account</span>
+                <span class="account">Sign In</span>
               </a>
+              <?php endif; ?>
             </div>
 
             
@@ -331,6 +394,12 @@
       </div>
     </header>
 
+     <?php if (!empty($flash) && $flash['type'] !== 'success'): ?>
+      <div class="flash-banner flash-<?= sanitize($flash['type']) ?>">
+        <?= sanitize($flash['message']) ?>
+      </div>
+    <?php endif; ?> 
+
     <!-- ══ HERO ══ -->
     <section class="hero">
       <div class="hero-inner">
@@ -341,11 +410,12 @@
           in one place.
         </p>
         <div class="hero-buttons">
-          <button class="btn-primary">Browse Shops</button>
-          <button class="btn-outline">View All Categories</button>
+          <button class="btn-primary"><a href="./shop.php">Browse Shops</a></button>
+          <button class="btn-outline"><a href="./categories.php">View All Categories</a></button>
         </div>
       </div>
     </section>
+    <a href=""></a>
 
     <!-- ══ CATEGORIES ══ -->
     <section class="section">
@@ -606,6 +676,51 @@
       </div>
       
     </section>
+
+    <?php if (!empty($featuredProducts)): ?>
+    <!-- ══ FEATURED PRODUCTS (pinned by admin) ══ -->
+    <section class="section featured-products">
+      <div class="section-header">
+        <h2 class="section-title">Featured Products</h2>
+        <a href="shop.php" class="see-all">See all →</a>
+      </div>
+      <div class="carousel-market-card">
+        <?php foreach ($featuredProducts as $fp): ?>
+          <div class="carousel-market-card-items">
+            <?php if (!empty($fp['image'])): ?>
+              <img
+                class="carousel-market-card-image"
+                src="<?= UPLOADS_URL ?>/<?= sanitize($fp['image']) ?>"
+                alt="<?= sanitize($fp['name']) ?>"
+              />
+            <?php else: ?>
+              <div
+                class="carousel-market-card-image"
+                style="background:#f7f4ef;display:flex;align-items:center;justify-content:center;"
+              >
+                <span style="font-size:2rem;font-weight:800;color:#d97706;text-transform:uppercase;">
+                  <?= sanitize(mb_substr($fp['name'], 0, 1)) ?>
+                </span>
+              </div>
+            <?php endif; ?>
+            <div class="market-card-image-content">
+              <h3 class="market-image-tittle" title="<?= sanitize($fp['name']) ?>">
+                <?= sanitize(mb_strimwidth($fp['name'], 0, 40, '…')) ?>
+              </h3>
+              <span class="market-image-text-shop"><?= sanitize($fp['shop_name'] ?? 'Arena Market') ?></span>
+              <span class="market-image-text-price">
+                <?= formatPrice($fp['price']) ?>
+                <?php if (!empty($fp['old_price']) && (float) $fp['old_price'] > 0): ?>
+                  <del style="margin-left:6px;color:#aaa;"><?= formatPrice($fp['old_price']) ?></del>
+                <?php endif; ?>
+              </span>
+              <a class="market-card-button" href="shop.php">View in Market</a>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </section>
+    <?php endif; ?>
 
     <!-- ══ MARKET VENDORS ══ -->
     <section
@@ -1003,8 +1118,150 @@
       </div>
     </footer>
 
+    <!-- ══ LOGOUT CONFIRMATION MODAL ══ -->
+    <div class="modal-overlay" id="logout-modal">
+      <div class="modal-card">
+        <div class="modal-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          </svg>
+        </div>
+        <h3>Sign out of Arena Market?</h3>
+        <p>You will need to sign in again to access your account.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" onclick="closeLogoutModal()">Stay Signed In</button>
+          <a href="<?= SITE_URL ?>/logout.php" class="modal-btn confirm" id="logout-confirm">
+            <span class="btn-label">Sign Out</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WELCOME MODAL (shows after a successful login) ══ -->
+    <div class="modal-overlay<?= (!empty($flash) && $flash['type'] === 'success') ? ' active' : '' ?>" id="welcome-modal">
+      <div class="modal-card">
+        <div class="modal-icon success">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+        </div>
+        <h3>Welcome back!</h3>
+        <p>
+          You are now signed in as
+          <strong><?= sanitize(getUsername()) ?: 'User' ?></strong>.
+          Enjoy shopping at Arena Market.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" onclick="closeWelcomeModal()">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+
     <script>
-      // ── Hamburger toggle ──
+      // ── Carousel: arrows + drag-to-scroll + wheel ──
+      (function () {
+        var carousels = document.querySelectorAll(
+          ".carousel, .carousel-card, .carousel-market-card"
+        );
+
+        carousels.forEach(function (el) {
+          if (el.dataset.carouselReady) return;
+          el.dataset.carouselReady = "1";
+
+          // Don't let images start a native drag while moving the carousel
+          el.querySelectorAll("img").forEach(function (img) {
+            img.draggable = false;
+          });
+
+          // Wrap in a positioned container so arrow buttons can anchor
+          var outer = document.createElement("div");
+          outer.className = "carousel-outer";
+          el.parentNode.insertBefore(outer, el);
+          outer.appendChild(el);
+
+          var btnLeft = document.createElement("button");
+          var btnRight = document.createElement("button");
+          btnLeft.type = btnRight.type = "button";
+          btnLeft.className = "carousel-btn carousel-btn-left";
+          btnRight.className = "carousel-btn carousel-btn-right";
+          btnLeft.setAttribute("aria-label", "Scroll left");
+          btnRight.setAttribute("aria-label", "Scroll right");
+          btnLeft.innerHTML = "\u2039";
+          btnRight.innerHTML = "\u203A";
+          outer.appendChild(btnLeft);
+          outer.appendChild(btnRight);
+
+          var step = function () {
+            return Math.round(el.clientWidth * 0.8);
+          };
+
+          var update = function () {
+            var max = el.scrollWidth - el.clientWidth;
+            btnLeft.disabled = el.scrollLeft <= 0;
+            btnRight.disabled = el.scrollLeft >= max - 1;
+          };
+
+          btnLeft.addEventListener("click", function () {
+            el.scrollBy({ left: -step(), behavior: "smooth" });
+          });
+          btnRight.addEventListener("click", function () {
+            el.scrollBy({ left: step(), behavior: "smooth" });
+          });
+
+          el.addEventListener("scroll", update, { passive: true });
+          window.addEventListener("resize", update);
+          // Re-check once images finish loading (scroll-width changes)
+          window.addEventListener("load", update);
+          if (document.readyState === "complete") update();
+          else requestAnimationFrame(update);
+
+          // ── Drag to scroll (mouse) ──
+          var dragging = false;
+          var startX = 0;
+          var startScroll = 0;
+
+          el.addEventListener("pointerdown", function (e) {
+            if (e.pointerType !== "mouse") return;
+            dragging = true;
+            startX = e.clientX;
+            startScroll = el.scrollLeft;
+            outer.classList.add("dragging");
+            el.style.scrollBehavior = "auto";
+            if (el.setPointerCapture) el.setPointerCapture(e.pointerId);
+          });
+
+          el.addEventListener("pointermove", function (e) {
+            if (!dragging) return;
+            e.preventDefault();
+            el.scrollLeft = startScroll - (e.clientX - startX);
+          });
+
+          function stopDrag(e) {
+            if (!dragging) return;
+            dragging = false;
+            outer.classList.remove("dragging");
+            el.style.scrollBehavior = "";
+            if (e && el.releasePointerCapture && e.pointerId) {
+              try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+            }
+          }
+          el.addEventListener("pointerup", stopDrag);
+          el.addEventListener("pointerleave", stopDrag);
+
+          // ── Vertical wheel becomes horizontal scroll ──
+          el.addEventListener(
+            "wheel",
+            function (e) {
+              if (el.scrollWidth <= el.clientWidth) return; // nothing to scroll
+              if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; // native horizontal
+              e.preventDefault();
+              el.scrollLeft += e.deltaY;
+            },
+            { passive: false }
+          );
+        });
+      })();
       const hamburger = document.getElementById("hamburger-btn");
       const mobileMenu = document.getElementById("dropdown-menu");
 
@@ -1066,6 +1323,91 @@
 
       const fruits = ['red-apple','yelloe-banana', 'green-mellon'];
       fruits.forEach(fruit => console.log(fruit))
+
+      // ── User menu dropdown (click username → show Logout) ──
+      const userMenuBtn = document.getElementById("user-menu-btn");
+      const userDropdown = document.getElementById("user-dropdown");
+
+      function toggleUserMenu(e) {
+        e.stopPropagation();
+        const isOpen = userDropdown.classList.contains("open");
+        closeUserMenu();
+        if (!isOpen) {
+          userDropdown.classList.add("open");
+          if (userMenuBtn) userMenuBtn.setAttribute("aria-expanded", "true");
+        }
+      }
+
+      function closeUserMenu() {
+        if (userDropdown) userDropdown.classList.remove("open");
+        if (userMenuBtn) userMenuBtn.setAttribute("aria-expanded", "false");
+      }
+
+      document.addEventListener("click", function () {
+        mobileMenu.classList.remove("open");
+        closeUserMenu();
+      });
+
+      // ── Logout confirmation modal ──
+      const logoutModal = document.getElementById("logout-modal");
+
+      function openLogoutModal() {
+        logoutModal.classList.add("active");
+      }
+
+      function closeLogoutModal() {
+        logoutModal.classList.remove("active");
+      }
+
+      logoutModal.addEventListener("click", function (e) {
+        if (e.target === logoutModal) closeLogoutModal();
+      });
+
+      // ── Sign Out button: roll the spinner so the user knows they signed out ──
+      const logoutConfirm = document.getElementById("logout-confirm");
+      if (logoutConfirm) {
+        const label    = logoutConfirm.querySelector(".btn-label");
+        const original = label ? label.textContent : "Sign Out";
+
+        logoutConfirm.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (logoutConfirm.classList.contains("loading")) return;
+
+          logoutConfirm.classList.add("loading");
+          logoutConfirm.setAttribute("aria-disabled", "true");
+          if (label) label.textContent = "Signing out…";
+
+          setTimeout(function () {
+            window.location.href = logoutConfirm.getAttribute("href");
+          }, 500);
+        });
+
+        // Restore the button if the modal is reopened without navigating away.
+        logoutModal.addEventListener("click", function (e) {
+          if (e.target !== logoutModal) return;
+          logoutConfirm.classList.remove("loading");
+          logoutConfirm.removeAttribute("aria-disabled");
+          if (label) label.textContent = original;
+        });
+      }
+
+      // ── Welcome modal (after login) ──
+      const welcomeModal = document.getElementById("welcome-modal");
+
+      function closeWelcomeModal() {
+        welcomeModal.classList.remove("active");
+      }
+
+      welcomeModal.addEventListener("click", function (e) {
+        if (e.target === welcomeModal) closeWelcomeModal();
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeLogoutModal();
+          closeWelcomeModal();
+        }
+      });
     </script>
   </body>
 </html>

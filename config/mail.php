@@ -171,3 +171,45 @@ function sendPasswordResetEmail($user, $token) {
 
     return sendMail($email, $subject, $html, $plainText);
 }
+
+/**
+ * Send a password reset code (OTP) email
+ * @param array $user  ['id', 'first_name', 'email']
+ * @param string $code 4-digit reset code
+ * @return bool
+ */
+function sendPasswordResetCode($user, $code) {
+    $name  = sanitize($user['first_name']);
+    $email = $user['email'];
+
+    $subject = 'Your Password Reset Code';
+
+    $plainText  = "Hi {$name},\r\n\r\n";
+    $plainText .= "We received a request to reset your password.\r\n\r\n";
+    $plainText .= "Your password reset code is: {$code}\r\n\r\n";
+    $plainText .= "Enter this code on the reset page. It expires in 10 minutes.\r\n\r\n";
+    $plainText .= "If you did not request this, please ignore this email.\r\n\r\n";
+    $plainText .= "Regards,\r\n";
+    $plainText .= SITE_NAME . " Team";
+
+    $html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head>';
+    $html .= '<body style="margin:0;padding:0;background:#f7f7f7;font-family:Segoe UI,system-ui,sans-serif;">';
+    $html .= '<div style="max-width:520px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">';
+    $html .= '<div style="background:linear-gradient(135deg,#3E2C23,#5c3d2e);padding:32px 24px;text-align:center;">';
+    $html .= '<h1 style="color:#d47719;font-size:1.5rem;margin:0;">' . SITE_NAME . '</h1></div>';
+    $html .= '<div style="padding:32px 24px;text-align:center;">';
+    $html .= '<h2 style="color:#3E2C23;font-size:1.2rem;margin:0 0 12px;">Reset Your Password</h2>';
+    $html .= '<p style="color:#555;font-size:0.9rem;line-height:1.6;margin:0 0 24px;">Hi ' . $name . ',<br><br>';
+    $html .= 'Use the code below to set a new password.</p>';
+    $html .= '<div style="display:inline-block;padding:18px 34px;background:#f9f5f0;border:1.5px solid #d47719;';
+    $html .= 'border-radius:12px;color:#b8620f;font-size:2rem;font-weight:800;letter-spacing:10px;';
+    $html .= 'font-family:Consolas,monospace;">' . $code . '</div>';
+    $html .= '<p style="color:#999;font-size:0.8rem;line-height:1.6;margin:28px 0 0;">This code expires in 10 minutes.</p>';
+    $html .= '<p style="color:#999;font-size:0.8rem;line-height:1.6;margin:8px 0 0;">If you did not request this, please ignore this email.</p>';
+    $html .= '</div>';
+    $html .= '<div style="background:#f9f5f0;padding:20px 24px;text-align:center;">';
+    $html .= '<p style="color:#999;font-size:0.75rem;margin:0;">&copy; ' . date('Y') . ' ' . SITE_NAME . '. All rights reserved.</p>';
+    $html .= '</div></div></body></html>';
+
+    return sendMail($email, $subject, $html, $plainText);
+}
