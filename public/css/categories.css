@@ -1,0 +1,53 @@
+/* ════════════════════════════════════════════════════════════
+   CATEGORIES.CSS — "All Categories" page styles.
+   Shared chrome (header/nav/breadcrumb/page scaffolding/footer/
+   modals) lives in site.css.
+   Load order: default.css → site.css → categories.css
+════════════════════════════════════════════════════════════ */
+
+/* Page body — keeps this page's original look
+   (default.css sets DM Sans / white) */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f7f7f7;
+  color: #222;
+}
+
+/* ══ PAGE HEAD ══ */
+.page-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.categories-count { font-size: 12px; color: var(--text-muted); }
+
+/* ══ CATEGORY GRID ══ */
+.cat-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.cat-item { background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 18px 10px 14px; gap: 10px; cursor: pointer; transition: background 0.15s; text-align: center; }
+.cat-item:hover { background: #fff8f2; }
+.cat-item:hover .cat-name { color: var(--orange); }
+.cat-item:hover .cat-img, .cat-item:hover .cat-icon-placeholder { border-color: var(--orange); transform: scale(1.05); }
+.cat-img { width: 72px; height: 72px; object-fit: contain; object-position: center; padding: 4px; border-radius: 10px; border: 2px solid transparent; transition: border-color 0.2s, transform 0.2s; background: #fff; }
+.cat-icon-placeholder { width: 72px; height: 72px; border-radius: 10px; background: linear-gradient(135deg, #fff0e0, #ffe0b2); display: flex; align-items: center; justify-content: center; border: 2px solid transparent; transition: border-color 0.2s, transform 0.2s; flex-shrink: 0; }
+.cat-icon-placeholder svg { width: 30px; height: 30px; stroke: var(--orange); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cat-name { font-size: 11.5px; font-weight: 600; color: #333; line-height: 1.3; transition: color 0.15s; }
+.cat-count { font-size: 10.5px; color: var(--text-muted); font-weight: 600; }
+
+/* ══ EMPTY STATE ══ */
+.empty-state { text-align: center; padding: 60px 20px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.empty-state svg { width: 44px; height: 44px; color: var(--orange-light); margin-bottom: 14px; }
+.empty-state h3 { font-size: 1rem; color: var(--brown); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+.empty-state a { display: inline-block; padding: 9px 20px; background: var(--orange); color: #fff; border-radius: 8px; font-size: 12px; font-weight: 700; }
+
+/* ══ NEWSLETTER ══ */
+.newsletter-section { background: linear-gradient(135deg, var(--brown) 0%, #5c3d2e 100%); padding: 48px 20px; text-align: center; margin-top: 40px; border-radius: 16px; }
+.newsletter-section h2 { color: #fff; font-size: 1.3rem; margin-bottom: 8px; }
+.newsletter-section p { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 24px; }
+.newsletter-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; max-width: 460px; margin: 0 auto; }
+.newsletter-input { flex: 1; min-width: 200px; height: 42px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 0 16px; background: rgba(255,255,255,0.08); color: #fff; font-size: 13px; outline: none; }
+.newsletter-input::placeholder { color: rgba(255,255,255,0.4); }
+.newsletter-input:focus { border-color: var(--orange-light); }
+.newsletter-btn { height: 42px; padding: 0 24px; background: var(--orange); color: #fff; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+/* ══ RESPONSIVE ══ */
+@media (min-width: 600px) {
+  .cat-wrap { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .cat-img, .cat-icon-placeholder { width: 80px; height: 80px; }
+}

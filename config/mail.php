@@ -117,7 +117,7 @@ function sendVerificationEmail($user) {
     $html .= '<a href="' . $url . '" style="display:inline-block;padding:14px 36px;background:#d47719;color:#fff;';
     $html .= 'font-weight:700;font-size:0.95rem;border-radius:10px;text-decoration:none;';
     $html .= 'box-shadow:0 4px 14px rgba(212,119,25,0.35);">Verify Email Address</a>';
-    $html .= '<p style="color:#999;font-size:0.8rem;line-height:1.6;margin:28px 0 0;">This link expires in 24 hours.</p>';
+    $html .= '<p style="color:#999;font-size:0.8rem;line-height:1.6;margin:28px 0 0;">This link expires in 12 hours.</p>';
     $html .= '<p style="color:#999;font-size:0.8rem;line-height:1.6;margin:8px 0 0;">If you did not create an account, please ignore this email.</p>';
     $html .= '</div>';
     $html .= '<div style="background:#f9f5f0;padding:20px 24px;text-align:center;">';

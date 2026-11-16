@@ -21,7 +21,7 @@ if ($sent === '1') {
     try {
         $db = getDB();
 
-        $stmt = $db->prepare("SELECT id, email_verified FROM users WHERE verification_token = :token LIMIT 1");
+        $stmt = $db->prepare("SELECT id, email_verified, verification_token_expires FROM users WHERE verification_token = :token LIMIT 1");
         $stmt->execute([':token' => $token]);
         $user = $stmt->fetch();
 
@@ -31,10 +31,13 @@ if ($sent === '1') {
         } elseif ($user['email_verified']) {
             $status  = 'info';
             $message = 'Your email is already verified. You can sign in.';
+        } elseif (!empty($user['verification_token_expires']) && strtotime($user['verification_token_expires'] . ' UTC') < time()) {
+            $status  = 'error';
+            $message = 'This verification link has expired. Please request a new one.';
         } else {
             $stmt = $db->prepare("
                 UPDATE users
-                SET email_verified = 1, verification_token = NULL, updated_at = NOW()
+                SET email_verified = 1, verification_token = NULL, verification_token_expires = NULL, updated_at = NOW()
                 WHERE id = :id
             ");
             $stmt->execute([':id' => $user['id']]);

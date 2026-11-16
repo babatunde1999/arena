@@ -212,7 +212,7 @@ require __DIR__ . '/partials/header.php';
                 <div style="display:flex;align-items:center;gap:10px;min-width:220px;">
                   <?php if (!empty($p['image'])): ?>
                     <img src="<?= UPLOADS_URL ?>/<?= sanitize($p['image']) ?>" alt=""
-                         style="width:44px;height:44px;object-fit:cover;border-radius:8px;background:#f3f4f6;">
+                         style="width:44px;height:44px;object-fit:contain;padding:2px;border-radius:8px;background:#fff;">
                   <?php else: ?>
                     <span style="width:44px;height:44px;border-radius:8px;background:#f3f4f6;display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#9ca3af;">?</span>
                   <?php endif; ?>

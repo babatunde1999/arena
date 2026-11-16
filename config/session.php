@@ -47,6 +47,65 @@ function getFlash() {
 }
 
 /**
+ * Get current user's role from session or database
+ * @param PDO|null $db
+ * @return string
+ */
+function getUserRole($db = null) {
+    if (isset($_SESSION['role']) && $_SESSION['role'] !== '') {
+        return $_SESSION['role'];
+    }
+    $userId = getUserId();
+    if (!$userId) {
+        return 'user';
+    }
+    if ($db === null) {
+        try {
+            $db = getDB();
+        } catch (Exception $e) {
+            return 'user';
+        }
+    }
+    try {
+        $stmt = $db->prepare("SELECT role FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $userId]);
+        $role = $stmt->fetchColumn();
+        if ($role) {
+            $_SESSION['role'] = $role;
+            return $role;
+        }
+    } catch (Exception $e) {
+        // ignore
+    }
+    return 'user';
+}
+
+/**
+ * Check if current user is a vendor
+ * @param PDO|null $db
+ * @return bool
+ */
+function isVendor($db = null) {
+    $role = getUserRole($db);
+    return $role === 'vendor' || $role === 'admin';
+}
+
+/**
+ * Require vendor role
+ * @param PDO|null $db
+ */
+function requireVendor($db = null) {
+    requireLogin();
+    if (!isVendor($db)) {
+        setFlash('error', 'Only vendors can access this page. You can become a vendor by opening your shop.');
+        if (defined('SITE_URL')) {
+            redirect(SITE_URL . '/index.php?vendor_required=1');
+        }
+        redirect('index.php?vendor_required=1');
+    }
+}
+
+/**
  * Check if user is logged in
  * @return bool
  */
@@ -96,7 +155,7 @@ function redirect($url) {
  * @return string
  */
 function sanitize($data) {
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars(trim((string) $data), ENT_QUOTES, 'UTF-8');
 }
 
 /**

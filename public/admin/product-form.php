@@ -359,11 +359,11 @@ require __DIR__ . '/partials/header.php';
     <div class="field-group" style="margin-bottom:16px;">
       <label for="image-input" style="display:block;font-weight:700;font-size:0.85rem;margin-bottom:6px;">Product Images <span style="color:#6b7280;">(optional, up to <?= PRODUCT_MAX_IMAGES ?> images, max 5MB each – JPG/PNG/WEBP/GIF)</span></label>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-        <div style="width:90px;height:90px;border-radius:10px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;">
+        <div style="width:90px;height:90px;border-radius:10px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;">
           <?php if ($editing && !empty($product['image'])): ?>
-            <img id="img-preview" src="<?= UPLOADS_URL ?>/<?= sanitize($product['image']) ?>" alt="Cover" style="width:100%;height:100%;object-fit:cover;">
+            <img id="img-preview" src="<?= UPLOADS_URL ?>/<?= sanitize($product['image']) ?>" alt="Cover" style="width:100%;height:100%;object-fit:contain;padding:4px;">
           <?php else: ?>
-            <img id="img-preview" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Preview">
+            <img id="img-preview" style="display:none;width:100%;height:100%;object-fit:contain;padding:4px;" alt="Preview">
             <span id="img-placeholder" style="font-weight:800;color:#9ca3af;">IMG</span>
           <?php endif; ?>
         </div>
@@ -387,7 +387,7 @@ require __DIR__ . '/partials/header.php';
             <?php foreach ($gallery as $g): ?>
               <div style="position:relative;">
                 <img src="<?= UPLOADS_URL ?>/<?= sanitize($g['image']) ?>" alt="Product image"
-                     style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
+                     style="width:70px;height:70px;object-fit:contain;padding:2px;background:#fff;border-radius:8px;">
                 <label style="position:absolute;bottom:2px;right:2px;background:#000;color:#fff;font-size:10px;padding:2px 5px;border-radius:5px;cursor:pointer;">
                   <input type="checkbox" name="remove_gallery[]" value="<?= (int) $g['id'] ?>"> Remove
                 </label>

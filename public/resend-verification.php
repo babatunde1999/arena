@@ -39,18 +39,17 @@ try {
 
     $verificationToken = $user['verification_token'];
 
-    if (empty($verificationToken)) {
-        $verificationToken = generateVerificationToken();
-        $stmt = $db->prepare("
-            UPDATE users
-            SET verification_token = :token, updated_at = NOW()
-            WHERE id = :id
-        ");
-        $stmt->execute([
-            ':token' => $verificationToken,
-            ':id'    => $user['id'],
-        ]);
-    }
+    // Always refresh token/expiry on resend for security and to show updated expiring time
+    $verificationToken = generateVerificationToken();
+    $stmt = $db->prepare("
+        UPDATE users
+        SET verification_token = :token, verification_token_expires = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 12 HOUR), updated_at = NOW()
+        WHERE id = :id
+    ");
+    $stmt->execute([
+        ':token' => $verificationToken,
+        ':id'    => $user['id'],
+    ]);
 
     $mailSent = sendVerificationEmail([
         'id'                 => $user['id'],

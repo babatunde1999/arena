@@ -6,6 +6,7 @@ require_once __DIR__ . '/../includes/shop.php';
 require_once __DIR__ . '/../includes/categories.php';
 
 requireLogin();
+requireVendor();
 
 $db   = getDB();
 $shop = getOrCreateShop($db);
@@ -243,7 +244,7 @@ $pageTitle = $editing ? 'Edit Product' : 'Add Product';
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title><?= $pageTitle ?> – Arena Market</title>
   <link rel="stylesheet" href="css/default.css">
-  <link rel="stylesheet" href="css/products.css">
+  <link rel="stylesheet" href="css/products.css?v=2">
 </head>
 <body>
 

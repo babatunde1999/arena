@@ -91,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $verificationToken = generateVerificationToken();
 
             $stmt = $db->prepare("
-                INSERT INTO users (first_name, last_name, username, email, gender, password, verification_token, created_at)
-                VALUES (:first_name, :last_name, :username, :email, :gender, :password, :verification_token, NOW())
+                INSERT INTO users (first_name, last_name, username, email, gender, password, verification_token, verification_token_expires, created_at)
+                VALUES (:first_name, :last_name, :username, :email, :gender, :password, :verification_token, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 12 HOUR), NOW())
             ");
 
             $stmt->execute([
